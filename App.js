@@ -6,10 +6,28 @@ import SignIn from "./src/signin";
 import SetLimit from "./src/setlimit";
 import Monitoring from "./src/monitoring";
 import Account from "./src/account";
+// import {
+//   useFonts,
+//   Montserrat_500Medium,
+//   Montserrat_700Bold,
+//   Montserrat_800ExtraBold,
+//   Montserrat_600SemiBold,
+// } from "@expo-google-fonts/montserrat";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  // const [fontsLoaded] = useFonts({
+  //   MontserratMedium: Montserrat_500Medium,
+  //   MontserratBold: Montserrat_700Bold,
+  //   MontserratExtraBold: Montserrat_800ExtraBold,
+  //   MontserratSemiBold: Montserrat_600SemiBold,
+  // });
+  // if (!fontsLoaded) {
+  //   console.log("Loading fonts...");
+  //   return null;
+  // } else {
+  //   console.log("Fonts Loaded!");
   return (
     <NavigationContainer independent={true}>
       <Stack.Navigator
@@ -26,4 +44,5 @@ export default function App() {
       </Stack.Navigator>
     </NavigationContainer>
   );
+  // }
 }
