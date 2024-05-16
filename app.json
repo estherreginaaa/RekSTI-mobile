@@ -3,6 +3,7 @@
     "name": "RekSTI",
     "slug": "RekSTI",
     "version": "1.0.0",
+    "scheme": "rekstiDormMOnitoring",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -11,8 +12,11 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.RekSTI.DormMonitoring",
+      "googleServicesFile": "./google-services/dev/GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -20,11 +24,28 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.RekSTI.DormMonitoring",
-      "versionCode": 1
+      "googleServicesFile": "./google-services/dev/google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "extra": {}
+    "plugins": [
+      "expo-router",
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      }
+    }
   }
 }

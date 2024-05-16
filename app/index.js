@@ -1,11 +1,11 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Index from "./app/index";
-import SignIn from "./app/signin";
-import SetLimit from "./app/setlimit";
-import Monitoring from "./app/monitoring";
-import Account from "./app/account";
+import Landing from "./landing";
+import SignIn from "./signin";
+import SetLimit from "./setlimit";
+import Monitoring from "./monitoring";
+import Account from "./account";
 // import {
 //   useFonts,
 //   Montserrat_500Medium,
@@ -31,12 +31,12 @@ export default function App() {
   return (
     <NavigationContainer independent={true}>
       <Stack.Navigator
-        initialRouteName="Index"
+        initialRouteName="Landing"
         screenOptions={{
           headerShown: false,
         }}
       >
-        <Stack.Screen name="Index" component={Index} />
+        <Stack.Screen name="Landing" component={Landing} />
         <Stack.Screen name="SignIn" component={SignIn} />
         <Stack.Screen name="SetLimit" component={SetLimit} />
         <Stack.Screen name="Monitoring" component={Monitoring} />

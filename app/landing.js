@@ -1,11 +1,13 @@
 import { Text, View, StyleSheet } from "react-native";
 import { Icon } from "react-native-paper";
 import { TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
-export default function Landing({ navigation }) {
+export default function Index() {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.push("SignIn")}>
+      <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
         <Text>Sign In</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.push("SetLimit")}>
