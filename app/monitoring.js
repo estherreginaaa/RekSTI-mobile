@@ -3,9 +3,10 @@ import { Icon } from "react-native-paper"
 import database from '@react-native-firebase/database';
 import Button from "./components/button"
 import ListMonitoring from "./components/listMonitoring"
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
+import NavigationBar from "./components/navigationbar";
 
-const Monitoring = () => {
+const Monitoring = ({ navigation }) => {
   const [listRooms, setListRooms] = useState([])
 
   const dataRooms = async () => {
@@ -32,38 +33,41 @@ const Monitoring = () => {
   }, [])
 
   return (
-    <View className="px-4 pt-10 bg-white flex-1">
-      <View className="mb-4 flex">
-        <View>
-          <Text className="font-MontserratSemiBold text-lg">Monitoring Kamar</Text>
+    <Fragment>
+      <View className="px-4 pt-10 bg-white flex-1">
+        <View className="mb-4 flex">
+          <View>
+            <Text className="font-MontserratSemiBold text-lg">Monitoring Kamar</Text>
+          </View>
+          <View>
+            <Text className="font-MontserratMedium text-xs">
+                Penghuni kamar yang melebihi ambang batas temperatur dan ambang kebisingan akan di tandai dengan warna yang berbeda
+            </Text>
+          </View>
+          <View className="items-end">
+            <Button
+              label="Refresh"
+              textColor="#000000"
+              iconRight={<Icon source="history" color={"#000000"} size={20} />}
+              onPress={dataRooms}
+            />
+          </View>
         </View>
-        <View>
-          <Text className="font-MontserratMedium text-xs">
-              Penghuni kamar yang melebihi ambang batas temperatur dan ambang kebisingan akan di tandai dengan warna yang berbeda
-          </Text>
-        </View>
-        <View className="items-end">
-          <Button
-            label="Refresh"
-            textColor="#000000"
-            iconRight={<Icon source="history" color={"#000000"} size={20} />}
-            onPress={dataRooms}
-          />
+        <View className="w-full flex flex-1">
+          <ScrollView>
+            {
+              listRooms.length > 0 &&
+              listRooms.map((e, i) => {
+                return (
+                  <ListMonitoring data={e} key={i}/>
+                )
+              })
+            }
+          </ScrollView>
         </View>
       </View>
-      <View className="w-full flex flex-1">
-        <ScrollView>
-          {
-            listRooms.length > 0 &&
-            listRooms.map((e, i) => {
-              return (
-                <ListMonitoring data={e} key={i}/>
-              )
-            })
-          }
-        </ScrollView>
-      </View>
-    </View>
+      <NavigationBar page="Monitoring" navigation={navigation}/>
+    </Fragment>
   )
 }
 

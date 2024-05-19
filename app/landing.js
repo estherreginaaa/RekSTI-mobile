@@ -9,7 +9,7 @@ export default function Landing({ navigation }) {
 
   useEffect(() => {
     if (isLoggedIn) {
-      navigation.navigate("Home");
+      navigation.navigate("SetLimit");
     }
   }, [isLoggedIn]);
 

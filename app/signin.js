@@ -61,7 +61,7 @@ export default function LoginAuth({ navigation }) {
 
   useEffect(() => {
     if(isLoggedIn) {
-      navigation.navigate("Home")
+      navigation.navigate("SetLimit")
     }
   }, [isLoggedIn])
 

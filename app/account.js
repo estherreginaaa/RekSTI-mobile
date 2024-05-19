@@ -1,8 +1,9 @@
 import { View, Text } from "react-native";
 import { Icon } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
 import Button from "./components/button.js";
 import { useAuth } from "../auth/AuthProvider";
+import NavigationBar from "./components/navigationbar.js";
+import { Fragment } from "react";
 
 const Account = ({ navigation }) => {
   const { signOut, user } = useAuth();
@@ -13,7 +14,7 @@ const Account = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView>
+    <Fragment>
       <View className="flex-1 min-h-screen justify-center items-center bg-white">
         <View className="w-full items-center">
           <View className="my-2">
@@ -29,7 +30,8 @@ const Account = ({ navigation }) => {
           </View>
         </View>
       </View>
-    </SafeAreaView>
+      <NavigationBar page="Account" navigation={navigation}/>
+    </Fragment>
   );
 };
 

@@ -36,9 +36,9 @@ export default ListMonitoring = ({ data }) => {
                         
                         <View>
                             {
-                                data.current_temp < data.max_temp &&
+                                data.current_temp > data.max_temp &&
                                 <View>
-                                    <Text className="font-MontserratMedium text-xs text-black">Temepratur</Text>
+                                    <Text className="font-MontserratMedium text-xs text-black">Tempratur</Text>
                                 </View>
                             }
 
