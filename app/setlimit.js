@@ -5,6 +5,7 @@ import { TouchableOpacity } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { TextInput } from "react-native-paper";
 import { useState, useEffect } from "react";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function SetLimit({ navigation }) {
   const [temp, setTemp] = useState();
@@ -37,7 +38,8 @@ export default function SetLimit({ navigation }) {
   }, []);
 
   return (
-    <View style={styles.frame}>
+    // <KeyboardAwareScrollView>
+    <KeyboardAwareScrollView contentContainerStyle={styles.frame}>
       <View style={styles.container}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text>Back to landing</Text>
@@ -142,7 +144,9 @@ export default function SetLimit({ navigation }) {
         </View>
       </View>
       <NavigationBar page={"SetLimit"} navigation={navigation} />
-    </View>
+    </KeyboardAwareScrollView>
+
+    // {/* </KeyboardAwareScrollView> */}
   );
 }
 
