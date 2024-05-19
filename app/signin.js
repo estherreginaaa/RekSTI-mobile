@@ -1,17 +1,15 @@
-import { View, StyleSheet } from "react-native";
-import { TextInput, Button, Title, HelperText } from "react-native-paper";
-// import { router } from "expo-router";
+import { useEffect, useState } from "react";
+import { View, Text, ScrollView, TextInput } from "react-native";
+import { Icon } from "react-native-paper";
+import Button from "./components/button";
 import { useAuth } from "../auth/AuthProvider";
-import { useState } from "react";
 
-export default function SignIn() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({
-    email: "",
-    password: "",
-  });
-  const { signIn } = useAuth();
+export default function LoginAuth({ navigation }) {
+  const [email, setEmail]           = useState("")
+  const [errorEmail, setErrorEmail] = useState("")
+  const [password, setPassword]     = useState("")
+  const [errorPass, setErrorPass]   = useState("")
+  const { signIn, isLoggedIn } = useAuth();
 
   const validate = () => {
     let newErrors = {
@@ -31,90 +29,100 @@ export default function SignIn() {
   };
 
   const handleSignIn = () => {
+    setErrorEmail("")
+    setErrorPass("")
+
     const findErrors = validate();
 
     if (Object.values(findErrors).some((value) => value !== "")) {
-      console.log(findErrors);
-      setErrors(findErrors);
+      setErrorEmail(findErrors.email)
+      setErrorPass(findErrors.password)
+
     } else {
       signIn(email, password)
-        .then((res) => {
-          console.log("login success", res);
-          // router.replace("/home");
+        .then(async (res) => {
+          navigation.navigate("Home")
+
         })
         .catch((error) => {
-          let newErrors = {
-            email: "",
-            password: "",
-          };
+
           if (error.code === "auth/invalid-credential") {
-            newErrors.email = "Email or password invalid.";
+            setErrorEmail("Email or password invalid.")
+            setErrorPass("Email or password invalid.")
+
           } else {
-            newErrors.email = "Something went wrong.";
+            setErrorEmail("Something went wrong.")
+            setErrorPass("Something went wrong.")
           }
-          setErrors(newErrors);
+          
         });
-      // router.replace("/home");
     }
   };
+
+  useEffect(() => {
+    if(isLoggedIn) {
+      navigation.navigate("Home")
+    }
+  }, [isLoggedIn])
+
   return (
-    <View style={styles.container}>
-      <Title style={styles.title}>Sign In</Title>
-      <View style>
-        <TextInput
-          left={<TextInput.Icon icon="email" />}
-          label="Email"
-          value={email}
-          mode="outlined"
-          onChangeText={(email) => {
-            setEmail(email);
-            setErrors((errors) => ({ ...errors, email: "" }));
-          }}
-          error={errors.email !== ""}
-        />
-        <HelperText type="error" visible={errors.email !== ""}>
-          {errors.email}
-        </HelperText>
-        <TextInput
-          left={<TextInput.Icon icon="key" />}
-          label="Password"
-          value={password}
-          mode="outlined"
-          onChangeText={(password) => {
-            setPassword(password);
-            setErrors((errors) => ({ ...errors, password: "" }));
-          }}
-          error={errors.password !== ""}
-          secureTextEntry
-        />
+    <ScrollView className="bg-white h-screen w-full px-4">
+      <View className="flex-1 h-screen justify-center items-center">
+        <View className="items-center py-4">
+          <Text className="font-MontserratExtraBold text-2xl text-[#9BB8CD] text-center">Sign In</Text>
+        </View>
+
+        <View className="w-full my-2">
+          <View className="border border-[#F0CF70] rounded-lg flex flex-row items-center px-4">
+            <View>
+              <Icon source="email" color={"#9BB8CD"} size={20} ></Icon>
+            </View>
+            <View className="flex-1">
+              <TextInput
+                className="bg-white border-none text-xs h-[45px] px-2"
+                placeholder="Email"
+                value={email}
+                onChangeText={(e) => setEmail(e)}
+              />
+            </View>
+          </View>
+
+          {
+            errorEmail !== "" &&
+            <View>
+              <Text className="text-red-500 font-MontserratMedium text-xs">{errorEmail}</Text>
+            </View>
+          }
+        </View>
+
+        <View className="w-full my-2">
+          <View className="border border-[#F0CF70] rounded-lg flex flex-row items-center px-4">
+            <View>
+              <Icon source="key" color={"#9BB8CD"} size={20} ></Icon>
+            </View>
+            <View className="flex-1">
+              <TextInput
+                secureTextEntry={true}
+                className="bg-white border-none text-xs h-[45px] px-2"
+                placeholder="Password"
+                value={password}
+                onChangeText={(e) => setPassword(e)}
+              />
+            </View>
+          </View>
+
+          {
+            errorPass !== "" &&
+            <View>
+              <Text className="text-red-500 font-MontserratMedium text-xs">{errorPass}</Text>
+            </View>
+          }
+        </View>
+        
+        <View className="items-center my-2">
+          <Button onPress={handleSignIn}/>
+        </View>
       </View>
-      <HelperText type="error" visible={errors.password !== ""}>
-        {errors.password}
-      </HelperText>
-      <Button mode="contained" onPress={handleSignIn} style={styles.button}>
-        Sign In
-      </Button>
-
-      {/*            
-            <Link href="/sign-up" >Create a new acccount.</Link>
-            <Link href="/" >Go To Landing</Link> */}
-    </View>
-  );
+    </ScrollView>
+  )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  button: {
-    marginBottom: 10,
-  },
-});
