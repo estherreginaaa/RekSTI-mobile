@@ -5,10 +5,10 @@ import Button from "./components/button";
 import { useAuth } from "../auth/AuthProvider";
 
 export default function LoginAuth({ navigation }) {
-  const [email, setEmail]           = useState("")
-  const [errorEmail, setErrorEmail] = useState("")
-  const [password, setPassword]     = useState("")
-  const [errorPass, setErrorPass]   = useState("")
+  const [email, setEmail] = useState("");
+  const [errorEmail, setErrorEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorPass, setErrorPass] = useState("");
   const { signIn, isLoggedIn } = useAuth();
 
   const validate = () => {
@@ -29,53 +29,50 @@ export default function LoginAuth({ navigation }) {
   };
 
   const handleSignIn = () => {
-    setErrorEmail("")
-    setErrorPass("")
+    setErrorEmail("");
+    setErrorPass("");
 
     const findErrors = validate();
 
     if (Object.values(findErrors).some((value) => value !== "")) {
-      setErrorEmail(findErrors.email)
-      setErrorPass(findErrors.password)
-
+      setErrorEmail(findErrors.email);
+      setErrorPass(findErrors.password);
     } else {
       signIn(email, password)
         .then(async (res) => {
-          navigation.navigate("Home")
-
+          navigation.navigate("SetLimit");
         })
         .catch((error) => {
-
           if (error.code === "auth/invalid-credential") {
-            setErrorEmail("Email or password invalid.")
-            setErrorPass("Email or password invalid.")
-
+            setErrorEmail("Email or password invalid.");
+            setErrorPass("Email or password invalid.");
           } else {
-            setErrorEmail("Something went wrong.")
-            setErrorPass("Something went wrong.")
+            setErrorEmail("Something went wrong.");
+            setErrorPass("Something went wrong.");
           }
-          
         });
     }
   };
 
   useEffect(() => {
-    if(isLoggedIn) {
-      navigation.navigate("SetLimit")
+    if (isLoggedIn) {
+      navigation.navigate("SetLimit");
     }
-  }, [isLoggedIn])
+  }, [isLoggedIn]);
 
   return (
     <ScrollView className="bg-white h-screen w-full px-4">
       <View className="flex-1 h-screen justify-center items-center">
         <View className="items-center py-4">
-          <Text className="font-MontserratExtraBold text-2xl text-[#9BB8CD] text-center">Sign In</Text>
+          <Text className="font-MontserratExtraBold text-2xl text-[#9BB8CD] text-center">
+            Sign In
+          </Text>
         </View>
 
         <View className="w-full my-2">
           <View className="border border-[#F0CF70] rounded-lg flex flex-row items-center px-4">
             <View>
-              <Icon source="email" color={"#9BB8CD"} size={20} ></Icon>
+              <Icon source="email" color={"#9BB8CD"} size={20}></Icon>
             </View>
             <View className="flex-1">
               <TextInput
@@ -87,18 +84,19 @@ export default function LoginAuth({ navigation }) {
             </View>
           </View>
 
-          {
-            errorEmail !== "" &&
+          {errorEmail !== "" && (
             <View>
-              <Text className="text-red-500 font-MontserratMedium text-xs">{errorEmail}</Text>
+              <Text className="text-red-500 font-MontserratMedium text-xs">
+                {errorEmail}
+              </Text>
             </View>
-          }
+          )}
         </View>
 
         <View className="w-full my-2">
           <View className="border border-[#F0CF70] rounded-lg flex flex-row items-center px-4">
             <View>
-              <Icon source="key" color={"#9BB8CD"} size={20} ></Icon>
+              <Icon source="key" color={"#9BB8CD"} size={20}></Icon>
             </View>
             <View className="flex-1">
               <TextInput
@@ -111,18 +109,19 @@ export default function LoginAuth({ navigation }) {
             </View>
           </View>
 
-          {
-            errorPass !== "" &&
+          {errorPass !== "" && (
             <View>
-              <Text className="text-red-500 font-MontserratMedium text-xs">{errorPass}</Text>
+              <Text className="text-red-500 font-MontserratMedium text-xs">
+                {errorPass}
+              </Text>
             </View>
-          }
+          )}
         </View>
-        
+
         <View className="items-center my-2">
-          <Button onPress={handleSignIn}/>
+          <Button onPress={handleSignIn} />
         </View>
       </View>
     </ScrollView>
-  )
+  );
 }

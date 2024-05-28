@@ -1,229 +1,170 @@
-import { ScrollView, Text, View, StyleSheet } from "react-native";
-import firestore from "@react-native-firebase/firestore";
+import {
+  View,
+  Text,
+  ScrollView,
+  TextInput,
+  ToastAndroid,
+  TouchableOpacity,
+} from "react-native";
+import { Fragment, useEffect, useState } from "react";
+import database from "@react-native-firebase/database";
 import NavigationBar from "./components/navigationbar";
-import { TouchableOpacity } from "react-native";
-import BouncyCheckbox from "react-native-bouncy-checkbox";
-import { TextInput } from "react-native-paper";
-import { useState, useEffect } from "react";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-export default function SetLimit({ navigation }) {
-  const [temp, setTemp] = useState();
-  const [noise, setNoise] = useState();
-  const [penghuni, setPenghuni] = useState();
-  const [isSelected, setIsSelected] = useState(false);
+const SetLimit = ({ navigation }) => {
+  const [listRooms, setListRooms] = useState([]);
+
+  const listRoom = () => {
+    const usersRef = database().ref("rooms");
+    usersRef.on("value", (snapshot) => {
+      const data = snapshot.val();
+      const usersArray = Object.keys(data).map((key) => ({
+        id: key,
+        ...data[key],
+      }));
+
+      setListRooms(usersArray);
+    });
+  };
+
+  const changeTemp = (id, valueTemp) => {
+    let listRoomsData = JSON.parse(JSON.stringify(listRooms));
+
+    for (let i = 0; i < listRoomsData.length; i++) {
+      if (listRoomsData[i].id === id) {
+        listRoomsData[i].max_temp = valueTemp !== "" ? parseInt(valueTemp) : 0;
+        break;
+      }
+    }
+
+    setListRooms(listRoomsData);
+  };
+
+  const changeNoise = (id, valueNoise) => {
+    let listRoomsData = JSON.parse(JSON.stringify(listRooms));
+
+    for (let i = 0; i < listRoomsData.length; i++) {
+      if (listRoomsData[i].id === id) {
+        listRoomsData[i].max_noise =
+          valueNoise !== "" ? parseInt(valueNoise) : 0;
+        break;
+      }
+    }
+
+    setListRooms(listRoomsData);
+  };
+
+  const onSaveChange = async (id, value) => {
+    try {
+      await database().ref(`rooms/${id}`).update(value);
+      ToastAndroid.show("Update success !", ToastAndroid.SHORT);
+    } catch (error) {
+      ToastAndroid.show("Update failed !", ToastAndroid.SHORT);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const querySnapshot = await firestore()
-          .collection("Penghuni")
-          .doc("OfJiSr6rtYbbHEfNMgVQFgZrSrv2")
-          .get();
-        const data = querySnapshot.data();
-        if (!data) {
-          console.log("Error data is not found");
-          console.log("penghuni kamar: ", penghuni);
-        } else {
-          setPenghuni(data.kamar);
-          console.log("penghuni kamar: ", penghuni);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        console.log("Data:", data);
-      }
-    };
-
-    fetchData();
+    listRoom();
   }, []);
 
   return (
-    // <KeyboardAwareScrollView>
-    <KeyboardAwareScrollView contentContainerStyle={styles.frame}>
-      <View style={styles.container}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text>Back to landing</Text>
-        </TouchableOpacity>
-
-        {/* Title */}
-        <Text style={styles.heading}>Set Limit Kerendahan Temperatur</Text>
-        <Text style={styles.text}>
-          Penghuni kamar akan diberi peringatan apabila suhu kamar sudah kurang
-          dari limit yang ditentukan.
-        </Text>
-
-        <View style={{ flexDirection: "row" }}>
-          {/* Choose Rooms */}
-          <View style={[styles.kamarBox, styles.border]}>
-            <Text style={[styles.title, { textAlign: "left" }]}>Kamar</Text>
-            <ScrollView>
-              <View style={styles.checkbox}>
-                <BouncyCheckbox
-                  isChecked={isSelected}
-                  onPress={(e) => setIsSelected(e)}
-                />
-                <Text style={styles.text}>Kamar {penghuni}</Text>
-              </View>
-            </ScrollView>
+    <Fragment>
+      <View className="flex-1 bg-white px-4 pt-10">
+        <View>
+          <View>
+            <Text className="font-MontserratBold">
+              Set Limit Kerendahan Temperatur dan kebisingan
+            </Text>
           </View>
-
-          <View style={{ marginBottom: 20 }}>
-            {/* Input Temperature */}
-            <View style={[styles.inputBox, styles.border]}>
-              <Text style={styles.title}>Temperatur</Text>
-              <TextInput
-                style={styles.inputText}
-                value={temp}
-                onChangeText={(e) => setTemp(e)}
-                placeholder="°C"
-              />
-              <Text style={styles.body}>dalam satuan derajat Celcius (°C)</Text>
-            </View>
-
-            {/* Button */}
-            <TouchableOpacity style={[styles.button, styles.border]}>
-              <Text style={styles.title}>Simpan Perubahan</Text>
-            </TouchableOpacity>
+          <View className="mt-1">
+            <Text className="font-MontserratMedium text-xs">
+              Penghuni kamar akan di beri peringatan apabila suhu kamar sudah
+              kurang dari atau tingkat kebisingan sudah lebih dari limit yang di
+              tentukan.
+            </Text>
           </View>
         </View>
 
-        {/* Title */}
-        <Text style={styles.heading}>Set Limit Ketinggian Kebisingan</Text>
-        <Text style={styles.text}>
-          Penghuni kamar akan diberi peringatan apabila level kebisingan kamar
-          sudah lebih dari limit yang ditentukan.
-        </Text>
-
-        <View style={{ flexDirection: "row" }}>
-          {/* Choose Rooms */}
-          <View
-            style={[styles.kamarBox, styles.border, { borderColor: "#9BB8CD" }]}
-          >
-            <Text style={[styles.title, { textAlign: "left" }]}>Kamar</Text>
-            <ScrollView>
-              <View style={styles.checkbox}>
-                <BouncyCheckbox
-                  isChecked={isSelected}
-                  onPress={(e) => setIsSelected(e)}
-                />
-                <Text style={styles.text}>Kamar {penghuni}</Text>
-              </View>
-            </ScrollView>
-          </View>
-
-          <View style={{ marginBottom: 20 }}>
-            {/* Input Noise */}
-            <View
-              style={[
-                styles.inputBox,
-                styles.border,
-                { borderColor: "#9BB8CD" },
-              ]}
-            >
-              <Text style={styles.title}>Kebisingan</Text>
-              <TextInput
-                style={styles.inputText}
-                value={noise}
-                onChangeText={(e) => setNoise(e)}
-                placeholder="dB"
-              />
-              <Text style={styles.body}>dalam satuan desibel (dB)</Text>
-            </View>
-
-            {/* Button */}
-            <TouchableOpacity
-              style={[
-                styles.button,
-                styles.border,
-                { backgroundColor: "#9BB8CD" },
-              ]}
-            >
-              <Text style={styles.title}>Simpan Perubahan</Text>
-            </TouchableOpacity>
-          </View>
+        <View className="flex-1 mt-3">
+          <ScrollView>
+            {listRooms.length > 0 &&
+              listRooms.map((e, i) => {
+                return (
+                  <View
+                    className="border border-[#EEC759] p-2 rounded-xl my-2"
+                    key={i}
+                  >
+                    <View>
+                      <View>
+                        <Text className="font-MontserratSemiBold text-lg">
+                          {e.rooms_name}
+                        </Text>
+                      </View>
+                      <View>
+                        <Text className="font-MontserratMedium text-xs">
+                          Name : {e.user.name}
+                        </Text>
+                      </View>
+                      <View>
+                        <Text className="font-MontserratMedium text-xs">
+                          email : {e.user.email}
+                        </Text>
+                      </View>
+                    </View>
+                    <View className="flex-row w-full mt-2 pt-2 border-t border-t-[#EEC759]">
+                      <View className="flex w-3/12 flex-row items-center">
+                        <View className="flex-1">
+                          <TextInput
+                            textAlign="center"
+                            inputMode="numeric"
+                            value={`${e.max_temp}`}
+                            className="border border-gray-200 rounded-md px-1 h-[45px] font-MontserratMedium"
+                            onChangeText={(val) => changeTemp(e.id, val)}
+                          />
+                        </View>
+                        <View>
+                          <Text className="text-xl font-MontserratMedium px-2">
+                            °C
+                          </Text>
+                        </View>
+                      </View>
+                      <View className="flex w-3/12 flex-row items-center">
+                        <View className="flex-1">
+                          <TextInput
+                            textAlign="center"
+                            inputMode="numeric"
+                            value={`${e.max_noise}`}
+                            className="border border-gray-200 rounded-md px-1 h-[45px] font-MontserratMedium"
+                            onChangeText={(val) => changeNoise(e.id, val)}
+                          />
+                        </View>
+                        <View>
+                          <Text className="text-xl font-MontserratMedium px-2">
+                            dB
+                          </Text>
+                        </View>
+                      </View>
+                      <View className="flex w-6/12 pl-2">
+                        <TouchableOpacity
+                          onPress={() => onSaveChange(e.id, e)}
+                          className=" bg-[#B1C381] h-[45px] flex-row rounded-md px-5 items-center justify-center"
+                        >
+                          <View>
+                            <Text className="font-MontserratBold text-center text-white">
+                              Save
+                            </Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                );
+              })}
+          </ScrollView>
         </View>
       </View>
-      <NavigationBar page={"SetLimit"} navigation={navigation} />
-    </KeyboardAwareScrollView>
-
-    // {/* </KeyboardAwareScrollView> */}
+      <NavigationBar page="SetLimit" navigation={navigation} />
+    </Fragment>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  frame: {
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
-  },
-  container: {
-    padding: 20,
-  },
-  heading: {
-    fontSize: 16,
-    fontWeight: "bold",
-    alignSelf: "flex-start",
-  },
-  border: {
-    borderRadius: 30,
-    borderWidth: 1,
-    elevation: 4,
-    shadowColor: "black",
-    shadowOpacity: "0.25",
-    shadowOffset: { width: -2, height: 4 },
-    shadowRadius: 10,
-  },
-  kamarBox: {
-    backgroundColor: "white",
-    width: 190,
-    height: 260,
-    borderColor: "#EEC759",
-    flexDirection: "column",
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    marginRight: 20,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: "bold",
-    textAlign: "center",
-    paddingVertical: 10,
-  },
-  text: {
-    paddingVertical: 5,
-    fontSize: 12,
-    alignSelf: "flex-start",
-  },
-  checkbox: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  inputBox: {
-    backgroundColor: "white",
-    width: 120,
-    height: 160,
-    justifyContent: "center",
-    borderColor: "#EEC759",
-    padding: 20,
-    marginBottom: 20,
-  },
-  inputText: {
-    backgroundColor: "transparent",
-    textAlign: "center",
-    fontSize: 38,
-    marginBottom: 10,
-  },
-  body: {
-    fontSize: 8,
-    textAlign: "center",
-  },
-  button: {
-    width: 120,
-    height: 80,
-    backgroundColor: "#EEC759",
-    borderColor: "#FFF7D4",
-    borderWidth: 1,
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-});
+export default SetLimit;
